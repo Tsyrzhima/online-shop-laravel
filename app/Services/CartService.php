@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Http\Requests\AddProductToCartRequest;
 use App\Http\Requests\DecreaseProductFromCartRequest;
+use App\Models\User;
 use App\Models\UserProduct;
 use Illuminate\Support\Facades\Auth;
 
@@ -50,6 +51,27 @@ class CartService
             $amount = 0;
         }
         return $amount;
+    }
+    public function getUserProducts(): ?\Illuminate\Database\Eloquent\Collection
+    {
+        /** @var User $user */
+        $user = Auth::user();
+        $userProducts = $user->userProducts()->get();
+        foreach ($userProducts as $userProduct) {
+
+            $totalSum = $userProduct->amount * $userProduct->product->price;
+            $userProduct->setAttribute('totalSum', $totalSum);
+        }
+        return $userProducts;
+    }
+
+    public function getSum(): int
+    {
+        $total = 0;
+        foreach ($this->getUserProducts() as $userProduct) {
+            $total += $userProduct->totalSum;
+        }
+        return $total;
     }
 
 }

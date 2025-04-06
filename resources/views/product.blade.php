@@ -9,60 +9,61 @@
             <div class="price">₽ {{$product->price}}</div>
             <div class="rating-info">
                 @if($count > 0)
-                <span class="rating">Оценка {{$product->rating}} </span>
-                <span class="rating-count">({{$product->count}} оценок)</span>
+                    <span class="rating">Оценка {{$product->rating}} </span>
+                    <span class="rating-count">({{$product->count}} оценок)</span>
                 @else
-                Оценок нет
+                    Оценок нет
                 @endif
             </div>
         </div>
 
         @if($count > 0)
-        <div class="review-section">
-            <h1 class="section-title">Отзывы о товаре</h1>
-            <div class="reviews-list">
-                @foreach($newReviews as $newReview)
-                <div class="review-item">
-                    <div class="review-header">
-                        <h2 class="review-author">{{$newReview->user->name}}</h2>
-                        <div class="review-rating">
-                            @if($newReview->rating === 5)
-                            5 звёзд
-                            @elseif($newReview->rating === 1)
-                            1 звезда
-                            @else
-                                {{$newReview->rating}} звезды
-                            @endif
+            <div class="review-section">
+                <h1 class="section-title">Отзывы о товаре</h1>
+                <div class="reviews-list">
+                    @foreach($reviews as $review)
+                        <div class="review-item">
+                            <div class="review-header">
+                                <h2 class="review-author">{{$review->user->name}}</h2>
+                                <div class="review-rating">
+                                    @if($review->grade === 5)
+                                        5 звёзд
+                                    @elseif($review->grade === 1)
+                                        1 звезда
+                                    @else
+                                        {{$review->grade}} звезды
+                                    @endif
+                                </div>
+                            </div>
+                            <p class="review-date">{{$review->date}}</p>
+                            <p class="review-comment">{{$review->comment}}</p>
                         </div>
-                    </div>
-                    <p class="review-date">{{$newReview->date}}</p>
-                    <p class="review-comment">{{$newReview->comment}}</p>
+                    @endforeach
                 </div>
-                @endforeach
-            </div>
-            @endif
+                @endif
 
-            <h1 class="section-title">Оставить отзыв о товаре</h1>
-            <form id="reviewForm" action="/add-review" method="post" class="review-form">
-                <div class="form-group">
-                    <label for="rating" class="form-label">Оценка:</label>
-                    <select id="rating" name="rating" class="form-select" required>
-                        <option value="" disabled selected>Выберите оценку</option>
-                        <option value="5">5 звёзд</option>
-                        <option value="4">4 звезды</option>
-                        <option value="3">3 звезды</option>
-                        <option value="2">2 звезды</option>
-                        <option value="1">1 звезда</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="review" class="form-label">Ваш отзыв:</label>
-                    <textarea id="review" name="review" rows="5" class="form-textarea" required></textarea>
-                    <input type="hidden" id="product_id" name="product_id" value = {{$product->id}}>
-                </div>
-                <button type="submit" class="button">Отправить отзыв</button>
-            </form>
-        </div>
+                <h1 class="section-title">Оставить отзыв о товаре</h1>
+                <form id="reviewForm" action="/add-review" method="post" class="review-form">
+                    <div class="form-group">
+                        <label for="rating" class="form-label">Оценка:</label>
+                        <select id="rating" name="rating" class="form-select" required>
+                            <option value="" disabled selected>Выберите оценку</option>
+                            <option value="5">5 звёзд</option>
+                            <option value="4">4 звезды</option>
+                            <option value="3">3 звезды</option>
+                            <option value="2">2 звезды</option>
+                            <option value="1">1 звезда</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        @csrf
+                        <label for="comment" class="form-label">Ваш отзыв:</label>
+                        <textarea id="comment" name="comment" rows="5" class="form-textarea" required></textarea>
+                        <input type="hidden" id="product_id" name="product_id" value= {{$product->id}}>
+                    </div>
+                    <button type="submit" class="button">Отправить отзыв</button>
+                </form>
+            </div>
     </div>
 </form>
 

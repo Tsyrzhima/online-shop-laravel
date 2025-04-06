@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
@@ -29,4 +30,7 @@ Route::middleware('auth')->group(function ()
     Route::get('/catalog', [ProductController::class, 'getCatalog']);
     Route::get('/product/{id}', [ProductController::class, 'getProduct'])->name('product');
     Route::post('/add-review', [ProductController::class, 'addReview'])->name('addReview');
+    Route::get('/create-order', [OrderController::class, 'getCheckoutForm'])->name('createOrder');
+    Route::post('create-order', [OrderController::class, 'handleCheckout'])->name('createOrder.submit');
+    Route::get('/user-orders', [OrderController::class, 'getAll'])->name('user-orders');
 });
