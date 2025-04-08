@@ -15,4 +15,14 @@ use Illuminate\Database\Eloquent\Model;
 class Review extends Model
 {
     protected $fillable = ['product_id', 'user_id', 'date', 'grade', 'comment', 'user'];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    public function author()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 }

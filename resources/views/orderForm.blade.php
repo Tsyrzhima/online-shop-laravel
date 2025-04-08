@@ -34,7 +34,7 @@
                 <label for="amount">Стоимость за 1 шт:</label>
                 <div class="price">₽ {{$userProduct->product->price}}</div>
                 <label for="totalProduct">Итого:</label>
-                <div class="price">₽ {{$userProduct->totalSum}}</div>
+                <div class="price">₽ {{$userProduct->sum()}}</div>
             @endforeach
             <h2><label for="totalOrder">Заказ на сумму:</label></h2>
             <div class="price">₽ {{$total}}</div>

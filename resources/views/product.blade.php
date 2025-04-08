@@ -24,7 +24,7 @@
                     @foreach($reviews as $review)
                         <div class="review-item">
                             <div class="review-header">
-                                <h2 class="review-author">{{$review->user->name}}</h2>
+                                <h2 class="review-author">{{$review->author()->first()->name}}</h2>
                                 <div class="review-rating">
                                     @if($review->grade === 5)
                                         5 звёзд

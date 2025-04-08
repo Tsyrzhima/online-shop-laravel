@@ -7,13 +7,13 @@
 <a href="/catalog">Каталог продуктов</a>
 <h1>Мои Заказы</h1>
 <div class="order-container">
-    @foreach($userOrders as $userOrder)
+    @foreach($orders as $order)
     <div class="order-card">
-        <h2>Заказ № {{ $userOrder->id }}</h2>
-        <p> {{ $userOrder->contact_name }}</p>
-        <p> {{ $userOrder->contact_phone }}</p>
-        <p> {{ $userOrder->comment }}</p>
-        <p> {{ $userOrder->address }}</p>
+        <h2>Заказ № {{ $order->id }}</h2>
+        <p> {{ $order->contact_name }}</p>
+        <p> {{ $order->contact_phone }}</p>
+        <p> {{ $order->comment }}</p>
+        <p> {{ $order->address }}</p>
         <table>
             <thead>
             <tr>
@@ -24,17 +24,17 @@
             </tr>
             </thead>
             <tbody>
-                @foreach($userOrder->orderProducts as $orderProduct)
+                @foreach($order->orderProducts as $orderProduct)
             <tr>
                 <td>{{ $orderProduct->product->name }} </td>
                 <td>{{ $orderProduct->amount }} </td>
                 <td>{{ $orderProduct->product->price }} </td>
-                <td>{{ $orderProduct->sum }} </td>
+                <td>{{ $orderProduct->sum() }} </td>
             </tr>
             @endforeach
             </tbody>
         </table>
-        <p>Сумма заказа {{ $userOrder->sum }} </p>
+        <p>Сумма заказа {{ $order->sum() }} </p>
     </div>
     @endforeach
 </div>

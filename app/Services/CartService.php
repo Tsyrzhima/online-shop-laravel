@@ -2,74 +2,59 @@
 
 namespace App\Services;
 
+use App\DTO\AddProductToCartDTO;
+use App\DTO\DecreaceProductFromCartDTO;
 use App\Http\Requests\AddProductToCartRequest;
 use App\Http\Requests\DecreaseProductFromCartRequest;
 use App\Models\User;
 use App\Models\UserProduct;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CartService
 {
-    public function addProduct(AddProductToCartRequest $request): int
+    public function addProduct(AddProductToCartDTO $data): int
     {
         $userId = Auth::id();
-        $product = UserProduct::where([
+
+        $userProduct = UserProduct::firstOrCreate([
             'user_id' => $userId,
-            'product_id' => $request->get('product_id')
-        ])->first();
-        if ($product) {
-            $amount = $product->amount + $request->get('amount');
-            $product->amount = $amount;
-            $product->save();
-        }else{
-            $amount = $request->get('amount');
-            UserProduct::query()->create([
-                'user_id' => $userId,
-                'product_id' => $request->get('product_id'),
-                'amount' => $amount
-            ]);
-        }
-        return $amount;
+            'product_id' => $data->getProductId()
+        ], [
+            'amount' => 0
+        ]);
+
+        $userProduct->increment('amount', $data->getAmount());
+
+        $userProduct->save();
+
+        return $userProduct->amount;
     }
-    public function decreaseProduct(DecreaseProductFromCartRequest $request): int
+    public function decreaseProduct(DecreaceProductFromCartDTO $data): int
     {
         $userId = Auth::id();
-        $product = UserProduct::where([
+        $userProduct = UserProduct::where([
             'user_id' => $userId,
-            'product_id' => $request->get('product_id')
+            'product_id' => $data->getProductId()
             ])->first();
-        if ($product) {
-            if($product->amount > 1){
-                $amount = $product->amount - 1;
-                $product->amount = $amount;
-                $product->save();
-            }elseif($product->amount === 1){
+        if ($userProduct) {
+            if($userProduct->amount > 1){
+                $amount = $userProduct->decrement('amount', $data->getAmount());
+                $userProduct->save();
+            }elseif($userProduct->amount === 1){
                 $amount = 0;
-                $product->delete();
+                $userProduct->delete();
             }
         }else{
             $amount = 0;
         }
         return $amount;
     }
-    public function getUserProducts(): ?\Illuminate\Database\Eloquent\Collection
-    {
-        /** @var User $user */
-        $user = Auth::user();
-        $userProducts = $user->userProducts()->get();
-        foreach ($userProducts as $userProduct) {
-
-            $totalSum = $userProduct->amount * $userProduct->product->price;
-            $userProduct->setAttribute('totalSum', $totalSum);
-        }
-        return $userProducts;
-    }
-
-    public function getSum(): int
+    public function getSum(User $user): int
     {
         $total = 0;
-        foreach ($this->getUserProducts() as $userProduct) {
-            $total += $userProduct->totalSum;
+        foreach ($user->userProducts()->get() as $userProduct) {
+            $total += $userProduct->sum();
         }
         return $total;
     }

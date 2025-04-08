@@ -11,7 +11,7 @@
         <p>{{$product->description}}</p>
         <div class="price">₽ {{$product->price}}</div>
         <p> кол-во <span class="product-quantity" data-product-id={{$product->id}}>
-                {{$product->amount}}
+                {{$product->getAmountInCart(\Illuminate\Support\Facades\Auth::user())}}
                         </span>
         </p>
         <div class="form-container">

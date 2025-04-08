@@ -36,4 +36,12 @@ class Order extends Model
             'product_id'
         );
     }
+    public function sum(): int
+    {
+        $total = 0;
+        foreach ($this->orderProducts()->get() as $orderProduct) {
+            $total += $orderProduct->sum();
+        }
+        return $total;
+    }
 }

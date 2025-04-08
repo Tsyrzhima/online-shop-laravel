@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\OrderCreateDTO;
 use App\Http\Requests\HandleCheckoutOrderRequest;
 use App\Models\User;
 use App\Services\CartService;
@@ -21,23 +22,33 @@ class OrderController
     {
         /** @var User $user */
         $user = Auth::user();
-        $userProducts = $this->cartService->getUserProducts();
+        $userProducts = $user->userProducts()->get();
         if(empty($userProducts))
         {
             return response()->redirectTo('/catalog');
         }
-        $total = $this->cartService->getSum();
+        $total = $this->cartService->getSum($user);
         return view('orderForm', compact('user', 'userProducts', 'total'));
     }
     public function handleCheckout(HandleCheckoutOrderRequest $request)
     {
-        $this->orderService->create($request);
+        $data = $request->validated();
+        $dto = new OrderCreateDTO(
+            $data['contact_name'],
+            $data['contact_phone'],
+            $data['comment'],
+            $data['address'],
+        );
+        $this->orderService->create($dto);
         return response()->redirectTo('/user-orders');
     }
 
     public function getAll()
     {
-        $userOrders = $this->orderService->getAll();
-        return view('userOrders', compact('userOrders'));
+        $user = Auth::user();
+
+        $orders = $user->orders()->with('products')->get();
+
+        return view('userOrders', compact('orders'));
     }
 }

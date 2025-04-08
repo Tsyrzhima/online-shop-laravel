@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTO\OrderCreateDTO;
 use App\Http\Requests\HandleCheckoutOrderRequest;
 use App\Models\Order;
 use App\Models\OrderProduct;
@@ -17,12 +18,12 @@ class OrderService
     {
         $this->cartService = new CartService();
     }
-    public function create(HandleCheckoutOrderRequest $request)
+    public function create(OrderCreateDTO $data)
     {
-        $data = $request->all();
-        $sum = $this->cartService->getSum();
+
         /** @var User $user */
         $user = Auth::user();
+        $sum = $this->cartService->getSum($user);
         $userProducts = $user->userProducts()->get();
         $order = Order::create([
             'user_id' => $user->id,
@@ -42,25 +43,4 @@ class OrderService
         UserProduct::query()->where('user_id', $user->id)->delete();
     }
 
-    public function getAll()
-    {
-        $user = Auth::user();
-
-        $orders = $user->orders()->with('products')->get();
-
-        //$orders = Order::with(['orderProducts.product'])->where('user_id', $user->id)->get();
-
-        foreach ($orders as $order) {
-            $totalSum = 0;
-            foreach ($order->orderProducts as $orderProduct) {
-                $orderProduct->setAttribute('Product', $orderProduct->product);
-                $sum = $orderProduct->amount * $orderProduct->product->price;
-                $orderProduct->setAttribute('sum', $sum);
-                $totalSum += $sum;
-            }
-            $order->sum = $totalSum;
-        }
-
-        return $orders;
-    }
 }

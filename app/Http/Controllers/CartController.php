@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\AddProductToCartDTO;
+use App\DTO\DecreaceProductFromCartDTO;
 use App\Models\User;
-use App\Models\UserProduct;
 use App\Http\Requests\AddProductToCartRequest;
 use App\Http\Requests\DecreaseProductFromCartRequest;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +26,9 @@ class CartController
     }
     public function addProductToCart(AddProductToCartRequest $request)
     {
-        $amount = $this->cartService->addProduct($request);
+        $data = $request->validated();
+        $dto = new AddProductToCartDto($data['product_id'], $data['amount']);
+        $amount = $this->cartService->addProduct($dto);
         $result = [
             'amount' => $amount
         ];
@@ -33,7 +36,9 @@ class CartController
     }
     public function decreaseProductFromCart(DecreaseProductFromCartRequest $request)
     {
-        $amount = $this->cartService->decreaseProduct($request);
+        $data = $request->validated();
+        $dto = new DecreaceProductFromCartDTO($data['product_id'], $data['amount']);
+        $amount = $this->cartService->decreaseProduct($dto);
         $result = [
             'amount' => $amount
         ];

@@ -35,22 +35,25 @@ class UserController
     public function editProfile(EditProfileRequest $request)
     {
         $user = Auth::user();
-        $data = $request->all();
+        $data = $request->validated();
         if(!empty($request['name']) && ($user->name !== $data['name'])){
-            User::query()->update(['name' => $data['name']]);
+            $user->name = $data['name'];
         };
         if(!empty($request['email']) && ($user->email !== $data['email'])){
-            User::query()->update(['email' => $data['email']]);
+            $user->email = $data['email'];
         };
         if(!empty($request['password']) && ($user->password !== Hash::make($data['password']))){
-            User::query()->update(['password' => Hash::make($request['password'])]);
+            $user->password = Hash::make($data['password']);
         };
+
+        $user->save();
+
         return response()->redirectTo('/profile');
     }
 
     public function registrate(RegistrateRequest $request)
     {
-        $data = $request->all();
+        $data = $request->validated();
         User::query()->create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -70,7 +73,6 @@ class UserController
         ]);
 
     }
-
     public function logout(Request $request)
     {
         Auth::logout();
